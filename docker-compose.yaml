@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  web:
+    image: webdevops/php-apache:8.2
+    platform: linux/amd64
+    ports:
+      - "80:80"
+    volumes:
+      - ./htdocs:/app
+      - ./php.ini:/opt/docker/etc/php/php.ini
+    build: .
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:oracle
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
