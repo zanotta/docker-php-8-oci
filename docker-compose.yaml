@@ -2,13 +2,14 @@ version: "3.9"
 
 services:
   web:
-    image: webdevops/php-apache:8.2
+    image: webdevops/php-apache:7.4
     platform: linux/amd64
     ports:
       - "80:80"
     volumes:
       - ./htdocs:/app
       - ./php.ini:/opt/docker/etc/php/php.ini
+      - ./db.ini:/var/secrets/db.ini
     build: .
     depends_on:
       - mysql
@@ -23,7 +24,7 @@ services:
       - ./mysql-data:/var/lib/mysql
     networks:
       - app-network
-    command: --default-authentication-plugin=mysql_native_password
+    #command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
