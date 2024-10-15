@@ -23,26 +23,32 @@ RUN unzip /tmp/instantclient-basic.zip -d /opt/oracle/ && \
 ENV LD_LIBRARY_PATH /opt/oracle/instantclient
 
 # Instala a extensão oci8
-RUN echo 'instantclient,/opt/oracle/instantclient' | pecl install oci8 && \
-    docker-php-ext-enable oci8
+RUN echo 'instantclient,/opt/oracle/instantclient' | pecl install oci8
+
+# Cria arquivo customizado para habilitar oci8 no PHP
+RUN echo "extension=oci8" >> /usr/local/etc/php/conf.d/custom-oci8.ini
 
 # Instala a extensão pdo_oci
 RUN docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient && \
     docker-php-ext-install pdo_oci
 
 # Instala o PhantomJS
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
-    tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/ && \
-    ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
-    rm phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
-    apt-get remove -y wget && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && \
+#    apt-get install -y wget && \
+#    wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
+#    tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /usr/local/share/ && \
+#    ln -s /usr/local/share/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin/ && \
+#    rm phantomjs-2.1.1-linux-x86_64.tar.bz2 && \
+#    apt-get remove -y wget && \
+#    apt-get clean && \
+#    rm -rf /var/lib/apt/lists/*
 
 # Reinicia o serviço Apache
-RUN service apache2 restart
+#RUN service apache2 start
 
-# Configuração do OpenSSL
+# Configura o OpenSSL
+RUN export OPENSSL_CONF=/etc/ssl/
 ENV OPENSSL_CONF /etc/ssl/
+
+# Adiciona php.ini customizado
+COPY php.ini /usr/local/etc/php/conf.d/custom-php.ini
