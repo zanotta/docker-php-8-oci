@@ -1,11 +1,10 @@
-version: "3.9"
-
 services:
   web:
     image: webdevops/php-apache:8.2
     platform: linux/amd64
     ports:
       - "80:80"
+      - "8000:8000"
     volumes:
       - ./htdocs:/app
       - ./php.ini:/opt/docker/etc/php/php.ini
